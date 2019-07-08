@@ -1,5 +1,5 @@
 package com.aouziel.jparker.model;
 
-public enum ParkingSlotType {
+public enum CarPowerType {
     twentyKw, fiftyKw, sedan
 }

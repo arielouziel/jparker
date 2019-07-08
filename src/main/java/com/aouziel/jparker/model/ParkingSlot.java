@@ -17,6 +17,9 @@ public class ParkingSlot {
     @ApiModelProperty(notes = "The database generated slot ID")
     private long id;
 
+    @Version
+    private Integer version; // used for optimistic locking
+
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn
@@ -24,7 +27,13 @@ public class ParkingSlot {
 
     @ApiModelProperty(notes = "The type of the parking slot")
     @Column(nullable = false)
-    private ParkingSlotType type;
+    private CarPowerType type;
+
+    @JsonIgnore
+//    @ApiModelProperty(notes = "The car currently occupying the parking slot")
+    @OneToOne
+    @JoinColumn(name = "car_id", referencedColumnName = "id")
+    private Car car;
 
     @Builder.Default
     @ApiModelProperty(notes = "The status of the parking slot")
@@ -34,4 +43,9 @@ public class ParkingSlot {
     @ApiModelProperty(notes = "The slot location in the parking lot")
     @Column(nullable = false)
     private String location;
+
+    public void setCar(Car car) {
+        this.car = car;
+        this.setStatus(car == null ? ParkingSlotStatus.free : ParkingSlotStatus.occupied);
+    }
 }

@@ -2,7 +2,7 @@ package com.aouziel.jparker.database;
 
 import com.aouziel.jparker.model.ParkingLot;
 import com.aouziel.jparker.model.ParkingSlot;
-import com.aouziel.jparker.model.ParkingSlotType;
+import com.aouziel.jparker.model.CarPowerType;
 import com.aouziel.jparker.repository.ParkingLotRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ParkingLotSeeder implements ApplicationRunner {
 
-    @Autowired
-    private ParkingLotRepository parkingLotRepository;
+    private final ParkingLotRepository parkingLotRepository;
 
-    public ParkingLotSeeder() {
+    @Autowired
+    public ParkingLotSeeder(ParkingLotRepository parkingLotRepository) {
+        this.parkingLotRepository = parkingLotRepository;
     }
 
     public void run(ApplicationArguments args) {
@@ -26,22 +27,22 @@ public class ParkingLotSeeder implements ApplicationRunner {
         parkingLotRepository.save(ParkingLot.builder()
                 .name("My First Parking Lot")
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.twentyKw)
+                        .type(CarPowerType.twentyKw)
                         .location("001")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.fiftyKw)
+                        .type(CarPowerType.fiftyKw)
                         .location("002")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.sedan)
+                        .type(CarPowerType.sedan)
                         .location("003")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.sedan)
+                        .type(CarPowerType.sedan)
                         .location("004")
                         .build()
                 )
@@ -51,22 +52,22 @@ public class ParkingLotSeeder implements ApplicationRunner {
         parkingLotRepository.save(ParkingLot.builder()
                 .name("My Second Parking Lot")
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.twentyKw)
+                        .type(CarPowerType.twentyKw)
                         .location("alpha")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.fiftyKw)
+                        .type(CarPowerType.fiftyKw)
                         .location("beta")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.sedan)
+                        .type(CarPowerType.sedan)
                         .location("gamma")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.sedan)
+                        .type(CarPowerType.sedan)
                         .location("pouet")
                         .build()
                 )
@@ -76,17 +77,17 @@ public class ParkingLotSeeder implements ApplicationRunner {
         parkingLotRepository.save(ParkingLot.builder()
                 .name("Yet Another Parking Lot")
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.twentyKw)
+                        .type(CarPowerType.twentyKw)
                         .location("A")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.fiftyKw)
+                        .type(CarPowerType.fiftyKw)
                         .location("B")
                         .build()
                 )
                 .slot(ParkingSlot.builder()
-                        .type(ParkingSlotType.sedan)
+                        .type(CarPowerType.sedan)
                         .location("C")
                         .build()
                 )
