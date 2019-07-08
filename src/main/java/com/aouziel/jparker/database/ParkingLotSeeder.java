@@ -1,8 +1,6 @@
 package com.aouziel.jparker.database;
 
-import com.aouziel.jparker.model.ParkingLot;
-import com.aouziel.jparker.model.ParkingSlot;
-import com.aouziel.jparker.model.CarPowerType;
+import com.aouziel.jparker.model.*;
 import com.aouziel.jparker.repository.ParkingLotRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,11 @@ public class ParkingLotSeeder implements ApplicationRunner {
 
         parkingLotRepository.save(ParkingLot.builder()
                 .name("My First Parking Lot")
+                .pricingPolicy(HourRatePricingPolicy.builder()
+                        .currencyCode("EUR")
+                        .hourPrice(150)
+                        .build()
+                )
                 .slot(ParkingSlot.builder()
                         .type(CarPowerType.twentyKw)
                         .location("001")
@@ -51,6 +54,12 @@ public class ParkingLotSeeder implements ApplicationRunner {
 
         parkingLotRepository.save(ParkingLot.builder()
                 .name("My Second Parking Lot")
+                .pricingPolicy(HourRatePlusFixedPricingPolicy.fixedBuilder()
+                        .fixedPrice(100)
+                        .hourPrice(150)
+                        .currencyCode("USD")
+                        .build()
+                )
                 .slot(ParkingSlot.builder()
                         .type(CarPowerType.twentyKw)
                         .location("alpha")
@@ -75,7 +84,13 @@ public class ParkingLotSeeder implements ApplicationRunner {
         );
 
         parkingLotRepository.save(ParkingLot.builder()
-                .name("Yet Another Parking Lot")
+                .name("Yet Another Expensive Parking Lot")
+                .pricingPolicy(HourRatePlusFixedPricingPolicy.fixedBuilder()
+                        .fixedPrice(200)
+                        .hourPrice(300)
+                        .currencyCode("AUD")
+                        .build()
+                )
                 .slot(ParkingSlot.builder()
                         .type(CarPowerType.twentyKw)
                         .location("A")

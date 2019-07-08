@@ -12,7 +12,6 @@ import java.util.Set;
 @Builder
 @EqualsAndHashCode(exclude = "slots")
 @Entity
-@Table(name = "parking_lots")
 @ApiModel(description="All details about parking lots. ")
 public class ParkingLot {
     @Id
@@ -29,4 +28,8 @@ public class ParkingLot {
     @ApiModelProperty(notes = "All the slots of the parking lot")
     @Singular
     private Set<ParkingSlot> slots;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "pricing_policy_id", referencedColumnName = "id", nullable = false)
+    private PricingPolicy pricingPolicy;
 }

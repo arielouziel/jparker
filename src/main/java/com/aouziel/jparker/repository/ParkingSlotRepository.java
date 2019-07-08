@@ -17,5 +17,5 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Long> 
     List<ParkingSlot> findAllByParkingLotIdAndStatusAndType(Long parkingLotId, ParkingSlotStatus status, CarPowerType type);
 
     @Lock(LockModeType.OPTIMISTIC)
-    Optional<ParkingSlot> findByParkingLotIdAndId(Long lotId, Long id);
+    Optional<ParkingSlot> findFirstByParkingLotIdAndStatusAndType(Long lotId, ParkingSlotStatus status, CarPowerType type);
 }
