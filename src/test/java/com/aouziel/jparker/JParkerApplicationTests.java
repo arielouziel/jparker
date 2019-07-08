@@ -1,4 +1,4 @@
-package net.guides.springboot2.springboot2jpaswagger2;
+package com.aouziel.jparker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

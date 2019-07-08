@@ -5,15 +5,18 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.Set;
 
+@Data
+@NoArgsConstructor @AllArgsConstructor
+@Builder
+@EqualsAndHashCode(exclude = "slots")
 @Entity
 @Table(name = "parking_lots")
 @ApiModel(description="All details about parking lots. ")
-@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
 public class ParkingLot {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "The database generated parking lot ID")
     private long id;
 
@@ -21,8 +24,9 @@ public class ParkingLot {
     @ApiModelProperty(notes = "The name of the parking lot")
     private String name;
 
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "parkingLot")
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "parking_lot_id")
     @ApiModelProperty(notes = "All the slots of the parking lot")
     @Singular
-    private Collection<ParkingSlot> slots;
+    private Set<ParkingSlot> slots;
 }
