@@ -4,7 +4,6 @@ import com.aouziel.jparker.exception.ConflictException;
 import com.aouziel.jparker.exception.PreconditionFailedException;
 import com.aouziel.jparker.exception.ResourceNotFoundException;
 import com.aouziel.jparker.model.*;
-import com.aouziel.jparker.repository.ParkingLotRepository;
 import com.aouziel.jparker.service.ParkingLotService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +12,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
 @Api(value="Parking Lot Management System", description="Operations pertaining to parking lots in Parking Lot Management System")
 public class ParkingLotController {
-    private final ParkingLotRepository parkingLotRepository;
     private final ParkingLotService parkingLotService;
 
     @Autowired
-    public ParkingLotController(
-            ParkingLotRepository parkingLotRepository,
-            ParkingLotService parkingLotService) {
-        this.parkingLotRepository = parkingLotRepository;
+    public ParkingLotController(ParkingLotService parkingLotService) {
         this.parkingLotService = parkingLotService;
     }
 
@@ -37,7 +31,15 @@ public class ParkingLotController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @GetMapping("/parking-lots")
     public List<ParkingLot> getAllParkingLots() {
-        return parkingLotRepository.findAll();
+        return parkingLotService.findAll();
+    }
+
+    @ApiOperation(value = "Create a new parking lot", response = ParkingLot.class)
+    @PostMapping("/parking-lots")
+    public ParkingLot createParkingLot(
+            @Valid @RequestBody ParkingLot parkingLot
+    ) {
+        return parkingLotService.create(parkingLot);
     }
 
     @ApiOperation(value = "Get a parking lot by Id")
@@ -46,21 +48,35 @@ public class ParkingLotController {
             @ApiParam(value = "ParkingLot id from which parking object will retrieve", required = true)
             @PathVariable(value = "lotId") Long lotId)
             throws ResourceNotFoundException {
-        ParkingLot parking = parkingLotRepository.findById(lotId)
+        ParkingLot parking = parkingLotService.findById(lotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking lot not found for this id :: " + lotId));
         return ResponseEntity.ok().body(parking);
     }
 
+    @ApiOperation(value = "Create a new slot in a parking lot", response = ParkingLot.class)
+    @PostMapping("/parking-lots/{lotId}/slots")
+    public ParkingSlot createParkingSlot(
+            @ApiParam(value = "ParkingLot id where to add the slot", required = true)
+            @PathVariable(value = "lotId") Long lotId,
+
+            @Valid @RequestBody ParkingSlot slot
+    ) throws ResourceNotFoundException {
+        return parkingLotService.addSlot(lotId, slot);
+    }
+
     @ApiOperation(value = "Get a list of free slots in a parking lot")
-    @GetMapping("/parking-lots/{lotId}/free-slots")
+    @GetMapping("/parking-lots/{lotId}/slots")
     public ResponseEntity<List<ParkingSlot>> listFreeParkingSlots(
             @ApiParam(value = "ParkingLot id from which parking slots will be retrieved", required = true)
             @PathVariable(value = "lotId") Long lotId,
 
+            @ApiParam(value = "Specify parking slot status to be used (free, occupied)")
+            @RequestParam(name = "parkingSlotStatus") ParkingSlotStatus parkingSlotStatus,
+
             @ApiParam(value = "Specify parking slot type to be used (twentyKw, fiftyKw or sedan)")
-            @RequestParam(name = "parkingSlotType") Optional<CarPowerType> parkingSlotType
+            @RequestParam(name = "parkingSlotType") CarPowerType parkingSlotType
     ) {
-        List<ParkingSlot> slots = this.parkingLotService.getFreeSlots(lotId, parkingSlotType);
+        List<ParkingSlot> slots = this.parkingLotService.getSlots(lotId, parkingSlotType, parkingSlotStatus);
 
         return ResponseEntity.ok().body(slots);
     }

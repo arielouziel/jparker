@@ -4,6 +4,7 @@ import com.aouziel.jparker.exception.ConflictException;
 import com.aouziel.jparker.exception.PreconditionFailedException;
 import com.aouziel.jparker.exception.ResourceNotFoundException;
 import com.aouziel.jparker.model.*;
+import com.aouziel.jparker.repository.ParkingLotRepository;
 import com.aouziel.jparker.repository.ParkingSlotOccupationRepository;
 import com.aouziel.jparker.repository.ParkingSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,40 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ParkingLotService {
+    private final ParkingLotRepository parkingLotRepository;
     private final ParkingSlotRepository parkingSlotRepository;
     private final ParkingSlotOccupationRepository parkingSlotOccupationRepository;
 
     @Autowired
-    public ParkingLotService(ParkingSlotRepository parkingSlotRepository, ParkingSlotOccupationRepository parkingSlotOccupationRepository) {
+    public ParkingLotService(
+            ParkingLotRepository parkingLotRepository,
+            ParkingSlotRepository parkingSlotRepository,
+            ParkingSlotOccupationRepository parkingSlotOccupationRepository
+    ) {
+        this.parkingLotRepository = parkingLotRepository;
         this.parkingSlotRepository = parkingSlotRepository;
         this.parkingSlotOccupationRepository = parkingSlotOccupationRepository;
+    }
+
+    public List<ParkingLot> findAll() {
+        return this.parkingLotRepository.findAll();
+    }
+
+    public ParkingLot create(ParkingLot parkingLot) {
+        this.parkingLotRepository.save(parkingLot);
+        return parkingLot;
+    }
+
+    public Optional<ParkingLot> findById(Long lotId) {
+        return this.parkingLotRepository.findById(lotId);
+    }
+
+    public ParkingSlot addSlot(Long lotId, ParkingSlot slot) throws ResourceNotFoundException {
+        ParkingLot parkingLot = parkingLotRepository.findById(lotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Parking lot not found"));
+
+        slot.setParkingLot(parkingLot);
+        return parkingSlotRepository.save(slot);
     }
 
     public ParkingSlotUse enterParkingLot(Long lotId, @Valid CarPowerType carPowerType) throws ResourceNotFoundException, ConflictException {
@@ -73,9 +101,15 @@ public class ParkingLotService {
         return parkingSlotOccupationRepository.save(occupation);
     }
 
-    public List<ParkingSlot> getFreeSlots(Long lotId, Optional<CarPowerType> parkingSlotType) {
-        return parkingSlotType
-                .map(type -> parkingSlotRepository.findAllByParkingLotIdAndStatusAndType(lotId, ParkingSlotStatus.free, type))
-                .orElse(parkingSlotRepository.findAllByParkingLotIdAndStatus(lotId, ParkingSlotStatus.free));
+    public List<ParkingSlot> getSlots(Long lotId, CarPowerType parkingSlotType, ParkingSlotStatus parkingSlotStatus) {
+        if (parkingSlotType != null && parkingSlotStatus != null) {
+            return parkingSlotRepository.findAllByParkingLotIdAndStatusAndType(lotId, parkingSlotStatus, parkingSlotType);
+        } else if (parkingSlotType != null) {
+            return parkingSlotRepository.findAllByParkingLotIdAndType(lotId, parkingSlotType);
+        } else if (parkingSlotStatus != null) {
+            return parkingSlotRepository.findAllByParkingLotIdAndStatus(lotId, parkingSlotStatus);
+        } else {
+            return parkingSlotRepository.findAllByParkingLotId(lotId);
+        }
     }
 }

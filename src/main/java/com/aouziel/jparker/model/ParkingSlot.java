@@ -3,7 +3,10 @@ package com.aouziel.jparker.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -12,6 +15,7 @@ import javax.persistence.*;
 @Builder @NoArgsConstructor @AllArgsConstructor
 @Data
 public class ParkingSlot {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "The database generated slot ID")

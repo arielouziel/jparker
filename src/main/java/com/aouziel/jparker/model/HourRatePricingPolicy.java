@@ -1,5 +1,6 @@
 package com.aouziel.jparker.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,8 @@ import javax.persistence.Entity;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue("hourRate")
+@DiscriminatorValue("HOURRATEPRICINGPOLICY")
+@ApiModel(description = "Details about hour rate pricing policy", parent = PricingPolicy.class)
 public class HourRatePricingPolicy extends PricingPolicy {
     @Column
     @ApiModelProperty(notes = "Hour price in smallest unit of currency")

@@ -1,5 +1,6 @@
 package com.aouziel.jparker.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,8 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @NoArgsConstructor
-@DiscriminatorValue("hourRatePlusFixed")
+@DiscriminatorValue("HOURRATEPLUSFIXEDPRICINGPOLICY")
+@ApiModel(description = "Details about hour rate plus fixed amount pricing policy", parent = PricingPolicy.class)
 public class HourRatePlusFixedPricingPolicy extends HourRatePricingPolicy {
 
     @Builder(builderMethodName = "fixedBuilder")

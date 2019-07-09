@@ -14,6 +14,7 @@ import java.util.Set;
 @Entity
 @ApiModel(description="All details about parking lots. ")
 public class ParkingLot {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "The database generated parking lot ID")

@@ -1,8 +1,8 @@
 package com.aouziel.jparker.repository;
 
+import com.aouziel.jparker.model.CarPowerType;
 import com.aouziel.jparker.model.ParkingSlot;
 import com.aouziel.jparker.model.ParkingSlotStatus;
-import com.aouziel.jparker.model.CarPowerType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
@@ -18,4 +18,8 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Long> 
 
     @Lock(LockModeType.OPTIMISTIC)
     Optional<ParkingSlot> findFirstByParkingLotIdAndStatusAndType(Long lotId, ParkingSlotStatus status, CarPowerType type);
+
+    List<ParkingSlot> findAllByParkingLotIdAndType(Long lotId, CarPowerType carPowerType);
+
+    List<ParkingSlot> findAllByParkingLotId(Long lotId);
 }
