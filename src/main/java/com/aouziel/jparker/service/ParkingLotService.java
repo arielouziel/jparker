@@ -45,6 +45,10 @@ public class ParkingLotService {
         return parkingLot;
     }
 
+    public void delete(long lotId) {
+        this.parkingLotRepository.deleteById(lotId);
+    }
+
     public Optional<ParkingLot> findById(Long lotId) {
         return this.parkingLotRepository.findById(lotId);
     }
@@ -55,6 +59,10 @@ public class ParkingLotService {
 
         slot.setParkingLot(parkingLot);
         return parkingSlotRepository.save(slot);
+    }
+
+    public void removeSlot(long lotId, long slotId) {
+        parkingSlotRepository.deleteByParkingLotIdAndId(lotId, slotId);
     }
 
     public ParkingTicket enterParkingLot(Long lotId, @Valid CarPowerType carPowerType) throws ResourceNotFoundException, ConflictException {

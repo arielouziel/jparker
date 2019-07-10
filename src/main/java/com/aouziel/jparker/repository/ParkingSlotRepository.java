@@ -22,4 +22,6 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Long> 
     List<ParkingSlot> findAllByParkingLotIdAndType(Long lotId, CarPowerType carPowerType);
 
     List<ParkingSlot> findAllByParkingLotId(Long lotId);
+
+    void deleteByParkingLotIdAndId(long lotId, long slotId);
 }
