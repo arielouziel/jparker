@@ -28,8 +28,8 @@ public class HourRatePlusFixedPricingPolicy extends HourRatePricingPolicy {
     private int fixedPrice;
 
     @Override
-    public void computePrice(ParkingSlotUse occupation) {
-        super.computePrice(occupation);
-        occupation.setPrice(occupation.getPrice() + fixedPrice);
+    public void computePrice(ParkingTicket ticket) {
+        super.computePrice(ticket);
+        ticket.setPrice(ticket.getPrice() + fixedPrice);
     }
 }

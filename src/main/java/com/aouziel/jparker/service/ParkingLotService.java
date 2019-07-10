@@ -5,8 +5,9 @@ import com.aouziel.jparker.exception.PreconditionFailedException;
 import com.aouziel.jparker.exception.ResourceNotFoundException;
 import com.aouziel.jparker.model.*;
 import com.aouziel.jparker.repository.ParkingLotRepository;
-import com.aouziel.jparker.repository.ParkingSlotOccupationRepository;
 import com.aouziel.jparker.repository.ParkingSlotRepository;
+import com.aouziel.jparker.repository.ParkingTicketRepository;
+import com.aouziel.jparker.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +23,17 @@ import java.util.Optional;
 public class ParkingLotService {
     private final ParkingLotRepository parkingLotRepository;
     private final ParkingSlotRepository parkingSlotRepository;
-    private final ParkingSlotOccupationRepository parkingSlotOccupationRepository;
+    private final ParkingTicketRepository parkingTicketRepository;
 
     @Autowired
     public ParkingLotService(
             ParkingLotRepository parkingLotRepository,
             ParkingSlotRepository parkingSlotRepository,
-            ParkingSlotOccupationRepository parkingSlotOccupationRepository
+            ParkingTicketRepository parkingTicketRepository
     ) {
         this.parkingLotRepository = parkingLotRepository;
         this.parkingSlotRepository = parkingSlotRepository;
-        this.parkingSlotOccupationRepository = parkingSlotOccupationRepository;
+        this.parkingTicketRepository = parkingTicketRepository;
     }
 
     public List<ParkingLot> findAll() {
@@ -56,12 +57,18 @@ public class ParkingLotService {
         return parkingSlotRepository.save(slot);
     }
 
-    public ParkingSlotUse enterParkingLot(Long lotId, @Valid CarPowerType carPowerType) throws ResourceNotFoundException, ConflictException {
+    public ParkingTicket enterParkingLot(Long lotId, @Valid CarPowerType carPowerType) throws ResourceNotFoundException, ConflictException {
         ParkingSlot slot = parkingSlotRepository.findFirstByParkingLotIdAndStatusAndType(lotId, ParkingSlotStatus.free, carPowerType)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking slot not found in provided parking lot for car power type"));
 
-        ParkingSlotUse occupation = this.parkingSlotOccupationRepository.save(
-                ParkingSlotUse.builder()
+        String number = StringUtils.randomNumeric(6);
+        while (this.parkingTicketRepository.existsByNumber(number)) { // find free ticket number
+            number = StringUtils.randomNumeric(6);
+        }
+
+        ParkingTicket ticket = this.parkingTicketRepository.save(
+                ParkingTicket.builder()
+                        .number(number)
                         .slot(slot)
                         .carPowerType(carPowerType)
                         .startTime(new Date())
@@ -76,17 +83,17 @@ public class ParkingLotService {
             throw new ConflictException("Someone else took the spot !");
         }
 
-        return occupation;
+        return ticket;
     }
 
-    public ParkingSlotUse leaveParkingLot(Long lotId, Long occupationId) throws ResourceNotFoundException, PreconditionFailedException {
-        ParkingSlotUse occupation = parkingSlotOccupationRepository.findById(occupationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Unkown occupation id"));
+    public ParkingTicket leaveParkingLot(Long lotId, String number) throws ResourceNotFoundException, PreconditionFailedException {
+        ParkingTicket occupation = parkingTicketRepository.findByNumber(number)
+                .orElseThrow(() -> new ResourceNotFoundException("Unkown ticket number"));
 
         ParkingSlot slot = occupation.getSlot();
         ParkingLot parkingLot = slot.getParkingLot();
         if (parkingLot.getId() != lotId) {
-            throw new PreconditionFailedException("This occupation is not in provided parking lot");
+            throw new PreconditionFailedException("This ticket does not belong to provided parking lot");
         }
 
         // update slot status
@@ -98,7 +105,7 @@ public class ParkingLotService {
         pricingPolicy.computePrice(occupation);
         occupation.setSlot(null);
 
-        return parkingSlotOccupationRepository.save(occupation);
+        return parkingTicketRepository.save(occupation);
     }
 
     public List<ParkingSlot> getSlots(Long lotId, CarPowerType parkingSlotType, ParkingSlotStatus parkingSlotStatus) {

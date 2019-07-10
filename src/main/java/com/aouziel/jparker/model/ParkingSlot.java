@@ -39,6 +39,6 @@ public class ParkingSlot {
     private ParkingSlotStatus status = ParkingSlotStatus.free;
 
     @ApiModelProperty(notes = "The slot location in the parking lot")
-    @Column(nullable = false)
+    @Column()
     private String location;
 }

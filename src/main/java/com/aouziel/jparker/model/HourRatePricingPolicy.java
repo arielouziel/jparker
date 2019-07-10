@@ -30,12 +30,12 @@ public class HourRatePricingPolicy extends PricingPolicy {
     private String currencyCode;
 
     @Override
-    public void computePrice(ParkingSlotUse occupation) {
-        DateTime start = new DateTime(occupation.getStartTime());
-        DateTime end = new DateTime(occupation.getEndTime());
+    public void computePrice(ParkingTicket ticket) {
+        DateTime start = new DateTime(ticket.getStartTime());
+        DateTime end = new DateTime(ticket.getEndTime());
 
         int hourCount = Hours.hoursBetween(end, start).getHours() + 1;
-        occupation.setPrice(hourCount * hourPrice);
-        occupation.setCurrencyCode(currencyCode);
+        ticket.setPrice(hourCount * hourPrice);
+        ticket.setCurrencyCode(currencyCode);
     }
 }

@@ -15,11 +15,15 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @Entity
-public class ParkingSlotUse {
+public class ParkingTicket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "The database generated slot occupation item ID")
     private long id;
+
+    @ApiModelProperty(notes = "The ticket number")
+    @Column(nullable = false, unique = true)
+    private String number;
 
     @ApiModelProperty(notes = "The time when occupation has started")
     @Column(nullable = false)
@@ -37,7 +41,7 @@ public class ParkingSlotUse {
     @JoinColumn(name = "slot_id", referencedColumnName = "id")
     private ParkingSlot slot;
 
-    @ApiModelProperty(notes = "The billed price for this occupation")
+    @ApiModelProperty(notes = "The billed price for this ticket")
     @Column
     private int price;
 

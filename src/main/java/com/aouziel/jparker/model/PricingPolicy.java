@@ -29,8 +29,8 @@ public abstract class PricingPolicy {
     private long id;
 
     @Column(name = "pricing_policy_type", insertable = false, updatable = false)
-    @ApiModelProperty(notes = "Type of pricing policy", allowableValues = "HOURRATEPLUSFIXEDPRICINGPOLICY,HOURRATEPRICINGPOLICY")
+    @ApiModelProperty(notes = "Type of pricing policy")
     private String pricingPolicyType;
 
-    public abstract void computePrice(ParkingSlotUse occupation);
+    public abstract void computePrice(ParkingTicket occupation);
 }

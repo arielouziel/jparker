@@ -24,7 +24,7 @@ public class ParkingLotController {
         this.parkingLotService = parkingLotService;
     }
 
-    @ApiOperation(value = "View a list of all parking lots", response = List.class)
+    @ApiOperation(value = "View a list of all parking lots")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -53,7 +53,7 @@ public class ParkingLotController {
         return ResponseEntity.ok().body(parking);
     }
 
-    @ApiOperation(value = "Create a new slot in a parking lot", response = ParkingLot.class)
+    @ApiOperation(value = "Create a new slot in a parking lot")
     @PostMapping("/parking-lots/{lotId}/slots")
     public ParkingSlot createParkingSlot(
             @ApiParam(value = "ParkingLot id where to add the slot", required = true)
@@ -88,7 +88,7 @@ public class ParkingLotController {
             @ApiResponse(code = 412, message = "Preconditions failed"),
     })
     @PostMapping("/parking-lots/{lotId}/slot-uses")
-    public ParkingSlotUse enterParkingLot(
+    public ParkingTicket enterParkingLot(
             @ApiParam(value = "ParkingLot id from which parking slot will be retrieved", required = true)
             @PathVariable(value = "lotId") Long lotId,
 
@@ -103,14 +103,14 @@ public class ParkingLotController {
             @ApiResponse(code = 409, message = "Somebody took the slot before you"),
             @ApiResponse(code = 412, message = "Preconditions failed"),
     })
-    @PutMapping("/parking-lots/{lotId}/slot-uses/{useId}/leave")
-    public ParkingSlotUse leaveParkingLot(
+    @PutMapping("/parking-lots/{lotId}/tickets/{ticketNumber}/leave")
+    public ParkingTicket leaveParkingLot(
             @ApiParam(value = "ParkingLot id from which parking slot will be retrieved", required = true)
             @PathVariable(value = "lotId") Long lotId,
 
-            @ApiParam(value = "Occupation id provided when entered the parking lot", required = true)
-            @PathVariable(value = "useId") Long useId
+            @ApiParam(value = "Ticket number provided when entered the parking lot", required = true)
+            @PathVariable(value = "ticketNumber") String ticketNumber
     ) throws ResourceNotFoundException, PreconditionFailedException {
-        return parkingLotService.leaveParkingLot(lotId, useId);
+        return parkingLotService.leaveParkingLot(lotId, ticketNumber);
     }
 }
