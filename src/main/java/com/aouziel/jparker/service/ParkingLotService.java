@@ -8,6 +8,7 @@ import com.aouziel.jparker.repository.ParkingLotRepository;
 import com.aouziel.jparker.repository.ParkingSlotRepository;
 import com.aouziel.jparker.repository.ParkingTicketRepository;
 import com.aouziel.jparker.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@Slf4j
 public class ParkingLotService {
     private final ParkingLotRepository parkingLotRepository;
     private final ParkingSlotRepository parkingSlotRepository;
@@ -49,7 +51,9 @@ public class ParkingLotService {
      * @return created parking lot
      */
     public ParkingLot create(ParkingLot parkingLot) {
+        log.debug("Creating parking lot");
         this.parkingLotRepository.save(parkingLot);
+        log.debug("Parking lot {} created", parkingLot.getId());
         return parkingLot;
     }
 
@@ -57,7 +61,8 @@ public class ParkingLotService {
      * Delete parking lot by id
      * @param lotId
      */
-    public void delete(long lotId) {
+    public void delete(Long lotId) {
+        log.debug("Delete parking lot {}", lotId);
         this.parkingLotRepository.deleteById(lotId);
     }
 
@@ -77,6 +82,8 @@ public class ParkingLotService {
      * @throws ResourceNotFoundException
      */
     public ParkingSlot addSlot(Long lotId, ParkingSlot slot) throws ResourceNotFoundException {
+        log.debug("Add slot to parking lot {}", lotId);
+
         ParkingLot parkingLot = parkingLotRepository.findById(lotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking lot not found"));
 
@@ -90,6 +97,8 @@ public class ParkingLotService {
      * @param slotId
      */
     public void removeSlot(long lotId, long slotId) {
+        log.debug("Remove slot {} from parking lot {}", slotId, lotId);
+
         parkingSlotRepository.deleteByParkingLotIdAndId(lotId, slotId);
     }
 
@@ -102,6 +111,8 @@ public class ParkingLotService {
      * @throws ConflictException if someone take the selected slot while we were processing (extremely rare case)
      */
     public ParkingTicket enterParkingLot(Long lotId, @Valid CarPowerType carPowerType) throws ResourceNotFoundException, ConflictException {
+        log.debug("Enter parking lot {}", lotId);
+
         ParkingSlot slot = parkingSlotRepository.findFirstByParkingLotIdAndStatusAndType(lotId, ParkingSlotStatus.free, carPowerType)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking slot not found in provided parking lot for car power type"));
 
@@ -139,6 +150,8 @@ public class ParkingLotService {
      * @throws PreconditionFailedException if the ticket does not belong to parking lot
      */
     public ParkingTicket leaveParkingLot(Long lotId, String number) throws ResourceNotFoundException, PreconditionFailedException {
+        log.debug("Leave parking lot {}", lotId);
+
         ParkingTicket ticket = parkingTicketRepository.findByNumber(number)
                 .orElseThrow(() -> new ResourceNotFoundException("Unkown ticket number"));
 

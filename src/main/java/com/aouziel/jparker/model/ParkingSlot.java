@@ -26,7 +26,7 @@ public class ParkingSlot {
     private Integer version; // used for optimistic locking
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn
     private ParkingLot parkingLot;
 

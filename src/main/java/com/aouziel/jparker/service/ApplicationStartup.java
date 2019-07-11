@@ -1,20 +1,14 @@
 package com.aouziel.jparker.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.info.BuildProperties;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletContext;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Arrays;
 
 @Component
 @Slf4j

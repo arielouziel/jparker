@@ -24,7 +24,7 @@ public class ParkingLot {
     @ApiModelProperty(notes = "The name of the parking lot")
     private String name;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     @JoinColumn(name = "parking_lot_id")
     @ApiModelProperty(notes = "All the slots of the parking lot")
     @Singular
