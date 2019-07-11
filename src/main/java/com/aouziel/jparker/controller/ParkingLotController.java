@@ -98,20 +98,20 @@ public class ParkingLotController {
         parkingLotService.removeSlot(lotId, slotId);
     }
 
-    @ApiOperation(value = "Get a list of free slots in a parking lot", nickname = "listFreeParkingSlots")
+    @ApiOperation(value = "Get a list of free slots in a parking lot", nickname = "getParkingSlots")
     @GetMapping("/parking-lots/{lotId}/slots")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    public ResponseEntity<List<ParkingSlot>> listFreeParkingSlots(
+    public ResponseEntity<List<ParkingSlot>> getParkingSlots(
             @ApiParam(value = "ParkingLot id from which parking slots will be retrieved", required = true)
             @PathVariable(value = "lotId") Long lotId,
 
             @ApiParam(value = "Specify parking slot status to be used (free, occupied)")
-            @RequestParam(name = "parkingSlotStatus") ParkingSlotStatus parkingSlotStatus,
+            @RequestParam(name = "parkingSlotStatus", required = false) ParkingSlotStatus parkingSlotStatus,
 
             @ApiParam(value = "Specify parking slot type to be used (twentyKw, fiftyKw or sedan)")
-            @RequestParam(name = "parkingSlotType") CarPowerType parkingSlotType
+            @RequestParam(name = "parkingSlotType", required = false) CarPowerType parkingSlotType
     ) {
         List<ParkingSlot> slots = this.parkingLotService.getSlots(lotId, parkingSlotType, parkingSlotStatus);
 
@@ -124,7 +124,7 @@ public class ParkingLotController {
             @ApiResponse(code = 409, message = "Somebody took the slot before you"),
             @ApiResponse(code = 412, message = "Preconditions failed"),
     })
-    @PostMapping("/parking-lots/{lotId}/slot-uses")
+    @PostMapping("/parking-lots/{lotId}/tickets")
     public ParkingTicket enterParkingLot(
             @ApiParam(value = "ParkingLot id from which parking slot will be retrieved", required = true)
             @PathVariable(value = "lotId") Long lotId,

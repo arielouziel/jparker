@@ -1,5 +1,6 @@
 package com.aouziel.jparker.model;
 
+import com.aouziel.jparker.exception.PreconditionFailedException;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -39,7 +40,7 @@ public class HourRatePlusFixedPricingPolicy extends HourRatePricingPolicy {
      * @param ticket
      */
     @Override
-    public void computePrice(ParkingTicket ticket) {
+    public void computePrice(ParkingTicket ticket) throws PreconditionFailedException {
         super.computePrice(ticket);
         ticket.setPrice(ticket.getPrice() + fixedPrice);
     }

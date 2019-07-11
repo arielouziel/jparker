@@ -44,7 +44,6 @@ public class ApplicationStartup
         log.info("");
         log.info("-------------------------------------------------------");
         log.info("Version      : {}", buildProperties.getVersion());
-        log.info("");
         log.info("API Docs     : http://{}:{}{}/v2/api-docs", serverAddress, serverPort, servletContext.getContextPath());
         log.info("-------------------------------------------------------");
         log.info("");

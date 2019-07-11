@@ -1,5 +1,6 @@
 package com.aouziel.jparker.model;
 
+import com.aouziel.jparker.exception.PreconditionFailedException;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
@@ -32,5 +33,10 @@ public abstract class PricingPolicy {
     @ApiModelProperty(notes = "Type of pricing policy")
     private String pricingPolicyType;
 
-    public abstract void computePrice(ParkingTicket occupation);
+    /**
+     * Compute the price of provided ticket.
+     * @param ticket a ticket with start and end time
+     * @throws PreconditionFailedException
+     */
+    public abstract void computePrice(ParkingTicket ticket) throws PreconditionFailedException;
 }

@@ -89,7 +89,7 @@ HTTP request | Description
 **POST** /api/v1/parking-lots | Create a new parking lot
 **POST** /api/v1/parking-lots/{lotId}/slots | Create a new slot in a parking lot
 **DELETE** /api/v1/parking-lots/{lotId} | Delete a parking
-**POST** /api/v1/parking-lots/{lotId}/slot-uses | Put a car in a any free parking slot
+**POST** /api/v1/parking-lots/{lotId}/tickets | Put a car in a any free parking slot
 **GET** /api/v1/parking-lots | View a list of all parking lots
 **GET** /api/v1/parking-lots/{lotId} | Get a parking lot by id
 **PUT** /api/v1/parking-lots/{lotId}/tickets/{ticketNumber}/leave | Remove car from parking lot and bill the customer
