@@ -10,6 +10,9 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+/**
+ *  Implements pricing policy with an hour rate + fixed amount
+ */
 @Data
 @Entity
 @NoArgsConstructor
@@ -23,10 +26,18 @@ public class HourRatePlusFixedPricingPolicy extends HourRatePricingPolicy {
         this.fixedPrice = fixedPrice;
     }
 
+    /**
+     * Fixed price in smallest currency unit (eg. cents)
+     */
     @Column
     @ApiModelProperty(notes = "Fixed amount")
     private int fixedPrice;
 
+    /**
+     * Compute price for provided ticket. Every started hour count as a complete hour.
+     * The fixed amount is added to the total
+     * @param ticket
+     */
     @Override
     public void computePrice(ParkingTicket ticket) {
         super.computePrice(ticket);

@@ -1,4 +1,4 @@
-package com.aouziel.jparker.config;
+package com.aouziel.jparker.swagger;
 
 import com.aouziel.jparker.model.HourRatePlusFixedPricingPolicy;
 import com.aouziel.jparker.model.HourRatePricingPolicy;
@@ -26,7 +26,7 @@ public class Swagger2Config {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
 					.apis(RequestHandlerSelectors
-						.basePackage("com.aouziel.jparker"))
+						.basePackage("com.aouziel.jparker.controller"))
 					.paths(PathSelectors.regex("/.*"))
 					.build()
 				.apiInfo(apiEndPointsInfo())

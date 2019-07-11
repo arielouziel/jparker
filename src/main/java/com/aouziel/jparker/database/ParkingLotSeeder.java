@@ -20,7 +20,7 @@ public class ParkingLotSeeder implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        log.info("Seeding Parking Lot table...");
+        log.info("Seeding Parking Lot Database");
 
         parkingLotRepository.save(ParkingLot.builder()
                 .name("My First Parking Lot")

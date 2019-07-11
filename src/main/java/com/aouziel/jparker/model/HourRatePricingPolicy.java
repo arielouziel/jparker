@@ -31,6 +31,10 @@ public class HourRatePricingPolicy extends PricingPolicy {
 
     @Override
     public void computePrice(ParkingTicket ticket) {
+        if (ticket.getStartTime() == null || ticket.getEndTime() == null) {
+
+        }
+
         DateTime start = new DateTime(ticket.getStartTime());
         DateTime end = new DateTime(ticket.getEndTime());
 
