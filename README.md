@@ -46,7 +46,7 @@ Go on the project's root folder, then type:
 
 You can seed the database automatically at [**ParkingLotSeeder.java**](src/main/java/com/aouziel/jparker/database/ParkingLotSeeder.java)
 
-###Example
+### Example
 
 ```
 parkingLotRepository.save(ParkingLot.builder()
