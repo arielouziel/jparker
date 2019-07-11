@@ -36,23 +36,46 @@ public class ParkingLotService {
         this.parkingTicketRepository = parkingTicketRepository;
     }
 
+    /**
+     * @return a list of all parking lots
+     */
     public List<ParkingLot> findAll() {
         return this.parkingLotRepository.findAll();
     }
 
+    /**
+     * Create a new parking lot
+     * @param parkingLot a parking lot with at least a name and a pricing policy
+     * @return created parking lot
+     */
     public ParkingLot create(ParkingLot parkingLot) {
         this.parkingLotRepository.save(parkingLot);
         return parkingLot;
     }
 
+    /**
+     * Delete parking lot by id
+     * @param lotId
+     */
     public void delete(long lotId) {
         this.parkingLotRepository.deleteById(lotId);
     }
 
+    /**
+     * @param lotId
+     * @return parking lot with provided id
+     */
     public Optional<ParkingLot> findById(Long lotId) {
         return this.parkingLotRepository.findById(lotId);
     }
 
+    /**
+     * Add a slot in a parking lot
+     * @param lotId the parking lot where to add the slot
+     * @param slot the slot to add with at least the car power type
+     * @return the created slot
+     * @throws ResourceNotFoundException
+     */
     public ParkingSlot addSlot(Long lotId, ParkingSlot slot) throws ResourceNotFoundException {
         ParkingLot parkingLot = parkingLotRepository.findById(lotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking lot not found"));
@@ -61,10 +84,23 @@ public class ParkingLotService {
         return parkingSlotRepository.save(slot);
     }
 
+    /**
+     * Remove a slot from a parking lot
+     * @param lotId
+     * @param slotId
+     */
     public void removeSlot(long lotId, long slotId) {
         parkingSlotRepository.deleteByParkingLotIdAndId(lotId, slotId);
     }
 
+    /**
+     * Enter a parking lot
+     * @param lotId id of the parking lot
+     * @param carPowerType power type of the car
+     * @return a parking ticket with a number needed to leave the parking
+     * @throws ResourceNotFoundException if no free slot is found
+     * @throws ConflictException if someone take the selected slot while we were processing (extremely rare case)
+     */
     public ParkingTicket enterParkingLot(Long lotId, @Valid CarPowerType carPowerType) throws ResourceNotFoundException, ConflictException {
         ParkingSlot slot = parkingSlotRepository.findFirstByParkingLotIdAndStatusAndType(lotId, ParkingSlotStatus.free, carPowerType)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking slot not found in provided parking lot for car power type"));
@@ -94,11 +130,19 @@ public class ParkingLotService {
         return ticket;
     }
 
+    /**
+     * Leave a parking lot
+     * @param lotId parking lot id
+     * @param number provided when entered
+     * @return the updated ticket with computed price based on parking lot pricing policy
+     * @throws ResourceNotFoundException if ticket number is unknown
+     * @throws PreconditionFailedException if the ticket does not belong to parking lot
+     */
     public ParkingTicket leaveParkingLot(Long lotId, String number) throws ResourceNotFoundException, PreconditionFailedException {
-        ParkingTicket occupation = parkingTicketRepository.findByNumber(number)
+        ParkingTicket ticket = parkingTicketRepository.findByNumber(number)
                 .orElseThrow(() -> new ResourceNotFoundException("Unkown ticket number"));
 
-        ParkingSlot slot = occupation.getSlot();
+        ParkingSlot slot = ticket.getSlot();
         ParkingLot parkingLot = slot.getParkingLot();
         if (parkingLot.getId() != lotId) {
             throw new PreconditionFailedException("This ticket does not belong to provided parking lot");
@@ -108,14 +152,21 @@ public class ParkingLotService {
         slot.setStatus(ParkingSlotStatus.free);
         parkingSlotRepository.save(slot);
 
-        occupation.setEndTime(new Date());
+        ticket.setEndTime(new Date());
         PricingPolicy pricingPolicy = slot.getParkingLot().getPricingPolicy();
-        pricingPolicy.computePrice(occupation);
-        occupation.setSlot(null);
+        pricingPolicy.computePrice(ticket);
+        ticket.setSlot(null);
 
-        return parkingTicketRepository.save(occupation);
+        return parkingTicketRepository.save(ticket);
     }
 
+    /**
+     * Return a list of slots in a parking lot
+     * @param lotId parking lot id
+     * @param parkingSlotType (optional) slot power type filter
+     * @param parkingSlotStatus (optional) slot status filter
+     * @return a list of slots
+     */
     public List<ParkingSlot> getSlots(Long lotId, CarPowerType parkingSlotType, ParkingSlotStatus parkingSlotStatus) {
         if (parkingSlotType != null && parkingSlotStatus != null) {
             return parkingSlotRepository.findAllByParkingLotIdAndStatusAndType(lotId, parkingSlotStatus, parkingSlotType);

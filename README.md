@@ -6,13 +6,13 @@ JParker is a superb REST API for Parking Lot Management
 
 ## Features
 
-- **List all parking lots**
-- **Create a new parking lot**
-- **Delete a parking lot**
-- **Add a slot in a parking lot**
-- **Remove a slot from a parking lot**
-- **Enter a parking lot and get a ticket**
-- **Leave a parking lot with ticket and get billed**
+- List all parking lots
+- Create a new parking lot
+- Delete a parking lot
+- Add a slot in a parking lot
+- Remove a slot from a parking lot
+- Enter a parking lot and get a ticket
+- Leave a parking lot with ticket and get billed
 
 ## Build and run
 
@@ -28,6 +28,7 @@ Feel free to alter this default configuration to feel your needs:
 
 - Java 8
 - Maven > 3.0
+- Lombok
 
 ### From terminal
 
@@ -40,6 +41,44 @@ Go on the project's root folder, then type:
 - Run the application
 - Go on *http://localhost:8080/* and play with the Swagger UI.
 - You can also use our [JParker Java Client and CLI](https://github.com/arielouziel/jparker-cli).
+
+## Seed
+
+You can seed the database automatically at [**ParkingLotSeeder.java**](src/main/java/com/aouziel/jparker/database/ParkingLotSeeder.java)
+
+###Example
+
+```
+parkingLotRepository.save(ParkingLot.builder()
+        .name("My First Parking Lot")
+        .pricingPolicy(HourRatePricingPolicy.builder()
+                .currencyCode("EUR")
+                .hourPrice(150)
+                .build()
+        )
+        .slot(ParkingSlot.builder()
+                .type(CarPowerType.twentyKw)
+                .location("001")
+                .build()
+        )
+        .slot(ParkingSlot.builder()
+                .type(CarPowerType.fiftyKw)
+                .location("002")
+                .build()
+        )
+        .slot(ParkingSlot.builder()
+                .type(CarPowerType.sedan)
+                .location("003")
+                .build()
+        )
+        .slot(ParkingSlot.builder()
+                .type(CarPowerType.sedan)
+                .location("004")
+                .build()
+        )
+        .build()
+);
+```
 
 ## API Routes
 
