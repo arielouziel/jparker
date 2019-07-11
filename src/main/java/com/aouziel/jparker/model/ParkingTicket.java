@@ -1,6 +1,5 @@
 package com.aouziel.jparker.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Date;
 
 @Builder @AllArgsConstructor
@@ -50,18 +47,7 @@ public class ParkingTicket {
     @Column
     private String currencyCode;
 
-    private String formattedPrice;
-
     @ApiModelProperty(notes = "The billed price in human readable format")
-    public String getFormattedPrice() {
-        if (price == 0 || currencyCode == null || formattedPrice == null) {
-            return "";
-        }
-
-        NumberFormat formatter = NumberFormat.getCurrencyInstance();
-        Currency currency = Currency.getInstance(currencyCode);
-        formatter.setCurrency(currency);
-
-        return formatter.format(price / 100.0);
-    }
+    @Column
+    private String formattedPrice;
 }

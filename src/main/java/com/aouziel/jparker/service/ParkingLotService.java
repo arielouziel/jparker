@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -168,9 +170,18 @@ public class ParkingLotService {
         ticket.setEndTime(new Date());
         PricingPolicy pricingPolicy = slot.getParkingLot().getPricingPolicy();
         pricingPolicy.computePrice(ticket);
+        ticket.setFormattedPrice(formatPrice(ticket.getPrice(), ticket.getCurrencyCode()));
         ticket.setSlot(null);
 
         return parkingTicketRepository.save(ticket);
+    }
+
+    private String formatPrice(int price, String currencyCode) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        Currency currency = Currency.getInstance(currencyCode);
+        formatter.setCurrency(currency);
+
+        return formatter.format(price / 100.0);
     }
 
     /**

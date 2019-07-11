@@ -28,7 +28,6 @@ Feel free to alter this default configuration to feel your needs:
 
 - Java 8
 - Maven > 3.0
-- Lombok
 
 ### From terminal
 

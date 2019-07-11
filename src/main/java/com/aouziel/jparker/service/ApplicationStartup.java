@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +13,6 @@ import javax.servlet.ServletContext;
 @Slf4j
 public class ApplicationStartup
         implements ApplicationListener<ApplicationReadyEvent> {
-
-    @Autowired
-    private BuildProperties buildProperties;
 
     @Autowired
     private ServletContext servletContext;
@@ -37,7 +33,6 @@ public class ApplicationStartup
         log.info("To shut it down, press <CTRL> + C at any time.");
         log.info("");
         log.info("-------------------------------------------------------");
-        log.info("Version      : {}", buildProperties.getVersion());
         log.info("API Docs     : http://{}:{}{}/v2/api-docs", serverAddress, serverPort, servletContext.getContextPath());
         log.info("-------------------------------------------------------");
         log.info("");
