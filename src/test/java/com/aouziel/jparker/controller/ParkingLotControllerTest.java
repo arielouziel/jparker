@@ -1,8 +1,7 @@
 package com.aouziel.jparker.controller;
 
 import com.aouziel.jparker.JParkerApplication;
-import com.aouziel.jparker.model.HourRatePricingPolicy;
-import com.aouziel.jparker.model.ParkingLot;
+import com.aouziel.jparker.model.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -21,8 +20,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -74,28 +72,84 @@ public class ParkingLotControllerTest {
     }
 
     @Test
-    public void getParkingLotById() {
+    public void getParkingLotById() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(get("/api/v1/parking-lots/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ParkingLot lot = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(), ParkingLot.class);
+        assertThat(lot).isNotNull();
+        assertThat(lot.getName()).isEqualTo("My First Parking Lot");
     }
 
     @Test
-    public void createParkingSlot() {
+    public void createParkingSlot() throws Exception {
+        ParkingSlot slot = ParkingSlot.builder()
+                .type(CarPowerType.sedan)
+                .location("XXX")
+                .build();
+
+        MvcResult mvcResult = this.mockMvc.perform(
+                post("/api/v1/parking-lots/1/slots")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(toJson(slot))
+        ).andExpect(status().isOk()).andReturn();
+
+        ParkingSlot result = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(), ParkingSlot.class);
+        assertThat(result.getId()).isNotNull();
     }
 
     @Test
-    public void listFreeParkingSlots() {
-    }
+    public void getParkingSlots() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(get("/api/v1/parking-lots/1/slots"))
+                .andExpect(status().isOk())
+                .andReturn();
 
-    @Test
-    public void enterParkingLot() {
-    }
-
-    @Test
-    public void leaveParkingLot() {
-    }
-
-    private <T> T toClass(String contentAsString) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(contentAsString, new TypeReference<T>() {});
+        List<ParkingSlot> slots = mapper.readValue(mvcResult.getResponse().getContentAsString(),
+                new TypeReference<List<ParkingSlot>>() {});
+
+        assertThat(slots).isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void enterParkingLot() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(
+                post("/api/v1/parking-lots/1/tickets")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(toJson("sedan")))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ParkingTicket result = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(), ParkingTicket.class);
+        assertThat(result.getNumber()).isNotNull();
+    }
+
+    @Test
+    public void leaveParkingLot() throws Exception {
+        // first enter to get a ticket
+        MvcResult mvcResult = this.mockMvc.perform(
+                post("/api/v1/parking-lots/1/tickets")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(toJson("sedan")))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ParkingTicket ticket = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(), ParkingTicket.class);
+        assertThat(ticket.getNumber()).isNotNull();
+
+        mvcResult = this.mockMvc.perform(
+                put("/api/v1/parking-lots/1/tickets/" + ticket.getNumber() + "/leave"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+        ticket = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(), ParkingTicket.class);
+        assertThat(ticket.getPrice()).isGreaterThan(0);
     }
 
     public static String toJson(final Object obj) {

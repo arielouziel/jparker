@@ -7,6 +7,7 @@ import com.aouziel.jparker.model.*;
 import com.aouziel.jparker.service.ParkingLotService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,17 +25,16 @@ public class ParkingLotController {
         this.parkingLotService = parkingLotService;
     }
 
-    @ApiOperation(value = "View a list of all parking lots")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+    @ApiOperation(value = "View a list of all parking lots", nickname = "getAllParkingLots")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @GetMapping("/parking-lots")
     public List<ParkingLot> getAllParkingLots() {
         return parkingLotService.findAll();
     }
 
-    @ApiOperation(value = "Create a new parking lot", response = ParkingLot.class)
+    @ApiOperation(value = "Create a new parking lot", response = ParkingLot.class, nickname = "createParkingLot")
     @PostMapping("/parking-lots")
     public ParkingLot createParkingLot(
             @Valid @RequestBody ParkingLot parkingLot
@@ -42,7 +42,10 @@ public class ParkingLotController {
         return parkingLotService.create(parkingLot);
     }
 
-    @ApiOperation(value = "Get a parking lot by Id")
+    @ApiOperation(value = "Get a parking lot by id", nickname = "getParkingLotById")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved parking lot"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @GetMapping("/parking-lots/{lotId}")
     public ResponseEntity<ParkingLot> getParkingLotById(
             @ApiParam(value = "ParkingLot id from which parking object will retrieve", required = true)
@@ -53,7 +56,22 @@ public class ParkingLotController {
         return ResponseEntity.ok().body(parking);
     }
 
-    @ApiOperation(value = "Create a new slot in a parking lot")
+    @ApiOperation(value = "Delete a parking", nickname = "deleteParkingLot")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully deleted parking lot"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @DeleteMapping("/parking-lots/{lotId}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void deleteParkingLot(
+            @ApiParam(value = "Parking lot id to delete", required = true)
+            @PathVariable(value = "lotId") Long lotId) {
+        parkingLotService.delete(lotId);
+    }
+
+    @ApiOperation(value = "Create a new slot in a parking lot", nickname = "createParkingSlot")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully added slot"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @PostMapping("/parking-lots/{lotId}/slots")
     public ParkingSlot createParkingSlot(
             @ApiParam(value = "ParkingLot id where to add the slot", required = true)
@@ -64,30 +82,49 @@ public class ParkingLotController {
         return parkingLotService.addSlot(lotId, slot);
     }
 
-    @ApiOperation(value = "Get a list of free slots in a parking lot")
+    @ApiOperation(value = "Remove a slot from a parking lot", nickname = "removeParkingSlot")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully removed slot"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @DeleteMapping("/parking-lots/{lotId}/slots/{slotId}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void removeParkingSlot(
+            @ApiParam(value = "ParkingLot id where to add the slot", required = true)
+            @PathVariable(value = "lotId") Long lotId,
+
+            @ApiParam(value = "Slot id to remove", required = true)
+            @PathVariable(value = "slotId") Long slotId
+    ) {
+        parkingLotService.removeSlot(lotId, slotId);
+    }
+
+    @ApiOperation(value = "Get a list of free slots in a parking lot", nickname = "getParkingSlots")
     @GetMapping("/parking-lots/{lotId}/slots")
-    public ResponseEntity<List<ParkingSlot>> listFreeParkingSlots(
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    public ResponseEntity<List<ParkingSlot>> getParkingSlots(
             @ApiParam(value = "ParkingLot id from which parking slots will be retrieved", required = true)
             @PathVariable(value = "lotId") Long lotId,
 
             @ApiParam(value = "Specify parking slot status to be used (free, occupied)")
-            @RequestParam(name = "parkingSlotStatus") ParkingSlotStatus parkingSlotStatus,
+            @RequestParam(name = "parkingSlotStatus", required = false) ParkingSlotStatus parkingSlotStatus,
 
             @ApiParam(value = "Specify parking slot type to be used (twentyKw, fiftyKw or sedan)")
-            @RequestParam(name = "parkingSlotType") CarPowerType parkingSlotType
+            @RequestParam(name = "parkingSlotType", required = false) CarPowerType parkingSlotType
     ) {
         List<ParkingSlot> slots = this.parkingLotService.getSlots(lotId, parkingSlotType, parkingSlotStatus);
 
         return ResponseEntity.ok().body(slots);
     }
 
-    @ApiOperation(value = "Put a car in a any free parking slot")
+    @ApiOperation(value = "Put a car in a any free parking slot", nickname = "enterParkingLot")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully picked the slot"),
             @ApiResponse(code = 409, message = "Somebody took the slot before you"),
             @ApiResponse(code = 412, message = "Preconditions failed"),
     })
-    @PostMapping("/parking-lots/{lotId}/slot-uses")
+    @PostMapping("/parking-lots/{lotId}/tickets")
     public ParkingTicket enterParkingLot(
             @ApiParam(value = "ParkingLot id from which parking slot will be retrieved", required = true)
             @PathVariable(value = "lotId") Long lotId,
@@ -97,7 +134,7 @@ public class ParkingLotController {
         return parkingLotService.enterParkingLot(lotId, carPowerType);
     }
 
-    @ApiOperation(value = "Remove car from parking lot and bill the customer")
+    @ApiOperation(value = "Remove car from parking lot and bill the customer", nickname = "leaveParkingLot")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully leaved the parking lot"),
             @ApiResponse(code = 409, message = "Somebody took the slot before you"),

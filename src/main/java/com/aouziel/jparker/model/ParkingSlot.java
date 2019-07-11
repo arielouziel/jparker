@@ -22,10 +22,11 @@ public class ParkingSlot {
     private long id;
 
     @Version
+    @JsonIgnore
     private Integer version; // used for optimistic locking
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn
     private ParkingLot parkingLot;
 

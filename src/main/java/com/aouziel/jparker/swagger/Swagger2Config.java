@@ -1,4 +1,4 @@
-package com.aouziel.jparker.config;
+package com.aouziel.jparker.swagger;
 
 import com.aouziel.jparker.model.HourRatePlusFixedPricingPolicy;
 import com.aouziel.jparker.model.HourRatePricingPolicy;
@@ -26,21 +26,21 @@ public class Swagger2Config {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
 					.apis(RequestHandlerSelectors
-						.basePackage("com.aouziel.jparker"))
+						.basePackage("com.aouziel.jparker.controller"))
 					.paths(PathSelectors.regex("/.*"))
 					.build()
-				.apiInfo(apiEndPointsInfo())
-				.additionalModels(
-						typeResolver.resolve(HourRatePricingPolicy.class),
-						typeResolver.resolve(HourRatePlusFixedPricingPolicy.class)
-				);
+				.apiInfo(apiEndPointsInfo());
+//				.additionalModels(
+//						typeResolver.resolve(HourRatePricingPolicy.class),
+//						typeResolver.resolve(HourRatePlusFixedPricingPolicy.class)
+//				);
 	}
 
 	private ApiInfo apiEndPointsInfo() {
 
 		return new ApiInfoBuilder().title("JParker REST API")
 				.description("An Open API for parking lot management")
-				.contact(new Contact("Ariel Ouziel", "www.arielouziel.com", "contact@arielouziel.com"))
+				.contact(new Contact("Ariel Ouziel", "http://www.arielouziel.com", "contact@arielouziel.com"))
 				.license("Apache 2.0")
 				.licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
 				.version("1.0.0")
